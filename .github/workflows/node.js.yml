@@ -1,0 +1,62 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Tests
+
+on:
+  push:
+    branches: ['main', 'develop']
+    paths-ignore:
+      - '.github/**'
+      - 'assets/**'
+      - 'README.md'
+
+  pull_request:
+    branches: ['main', 'develop']
+    paths-ignore:
+      - '.github/**'
+      - 'assets/**'
+      - 'README.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm run lint:types --if-present
+      - run: npm run lint --if-present
+      - run: npm run format --if-present
+      - run: |
+          npm run dev &
+          sleep 5
+          npm run test
+
+      - name: Upload diff
+        if: failure()
+        id: upload-diff
+        env:
+          CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+        run: bash tools/upload_diff.sh
+
+      - name: Create comment
+        if: github.event_name == 'pull_request' && failure()
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            **Visual regression test failed!**
+
+            ${{ steps.upload-diff.outputs.diff-1 && format('![diff-1]({0})',steps.upload-diff.outputs.diff-1) }}
+            ${{ steps.upload-diff.outputs.diff-2 && format('![diff-2]({0})',steps.upload-diff.outputs.diff-2) }}
+            ${{ steps.upload-diff.outputs.diff-3 && format('![diff-3]({0})',steps.upload-diff.outputs.diff-3) }}
+            ${{ steps.upload-diff.outputs.diff-4 && format('![diff-4]({0})',steps.upload-diff.outputs.diff-4) }}

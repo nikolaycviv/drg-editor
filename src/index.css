@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.drg-scrollbar::-webkit-scrollbar {
+  z-index: -2;
+  width: 20px;
+}
+
+.drg-scrollbar::-webkit-scrollbar-track {
+  @apply my-2 bg-gray-800;
+}
+
+.drg-internal-scrollbar::-webkit-scrollbar-track {
+  @apply !my-0;
+}
+
+.drg-scrollbar::-webkit-scrollbar-thumb {
+  border: 5px solid transparent;
+  background-clip: content-box;
+  @apply bg-drg-primary-500;
+}
+
+body {
+  color: rgb(255 255 255 / 87%);
+  @apply bg-gray-900;
+
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .drg-gradient {
+    background: radial-gradient(
+      circle,
+      rgb(0 0 0 / 40%) 0%,
+      rgb(0 0 0 / 4%) 100%
+    );
+  }
+}
+
+.drg-framer {
+  @apply drg-gradient border-t-2 border-b-2 border-drg-primary-500;
+}
+
+.drg-title {
+  font-family: 'Danger Flight', Arial, Helvetica, sans-serif;
+}
+
+.drg-button {
+  @apply mx-2 cursor-pointer bg-black px-10 py-3 text-white transition-all duration-300 hover:bg-drg-primary-600;
+}
+
+.drg-button-disabled {
+  @apply cursor-not-allowed bg-black text-slate-400 opacity-80 hover:bg-gray-900;
+}
+
+.drg-select > option {
+  @apply rounded-none border-0 bg-gray-800;
+}
+
+.drg-select > option:checked {
+  @apply rounded-none border-0 bg-gray-700;
+}
+
+.emblems {
+  background: url('/assets/promotion_emblems.webp') no-repeat;
+  background-size: 330% 620%, cover;
+  width: 30px;
+  height: 30px;
+}
+@layer base {
+  @font-face {
+    font-family: heavitas;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/assets/fonts/Heavitas.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Danger Flight';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/assets/fonts/dangerflight.ttf') format('truetype');
+  }
+}
